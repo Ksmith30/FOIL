@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 using namespace std;
 
 const char addition = '+';
@@ -14,21 +15,23 @@ class operators
     public:
         operators();
         ~operators();
-
-        void convertTerms();
-        void seperateTerms(string userInput);
+        
         void setVariable(const char Variable);
+        bool checkForVariables(const string userInput);
+        void separateTerms(const string userInput);
+        void separateVariableTerms( const string userInput);
+        void separateNonVariableTerms(const string userInput);
+        void getCoefficients(const string userInput);
     private:
         char checkString;
         string subString;
         vector<string> terms;
         vector<string> variableTerms;
-        vecotr<string> nonVariableTerms;
-        const int beginning = 0;
+        vector<string> nonVariableTerms;
         int position1 = 0;
         char variable;
-        int length;
         int variablePosition;
+        string s;
 };
 
 operators::operators()
@@ -42,9 +45,18 @@ operators::~operators()
 void operators::setVariable(const char Variable)
 {
     variable = Variable;
+    stringstream ss;
+    ss << variable;
+    ss >> s;
 }
 
-void operators::seperateTerms(string userInput)
+bool operators::checkForVariables(string userInput)
+{
+    if (userInput.find(variable, 0) != string::npos) return true;
+    else return false;
+}
+
+void operators::separateTerms(string userInput)
 {
     for (int i = 0; i < userInput.length(); i++)
     {
@@ -63,24 +75,56 @@ void operators::seperateTerms(string userInput)
             position1 = i + 1;
         }
     }
-    for (auto i = terms.begin(); i != terms.end(); ++i)
-            std::cout << *i << ' ';
+    for (auto &i : terms) 
+        cout << i << ' ';
+    cout << endl;
 }
 
-void operators::convertTerms()
+void operators::separateVariableTerms(string userInput)
 {
-       
+    for (int r = 0; r < terms.size(); r++)
+        for (int c = 0; c < terms.size(); c++)
+            if (terms[r][c] == variable)
+                variableTerms.push_back(terms[r]);
+          
+    for (auto &i : variableTerms)
+        cout << i << ' ';
+    cout << endl;
+}
+
+void operators::separateNonVariableTerms(string userInput)
+{
+    for (int r = 0; r < terms.size(); r++)
+    {
+        for (int c = 0; c < terms.size(); c++)
+        {
+            if (terms[r][c] == variable)
+                break;
+            else
+                nonVariableTerms.push_back(terms[r]);
+            break;
+        }
+    }
+
+    for (auto &i : nonVariableTerms)
+        cout << i << ' ';
+    cout << endl;
+}
+
+void operators::getCoefficients(const string userInput)
+{
+    
 }
 
 int main()
 {
     string userInput1, userInput2;
     char Variable;
-    cout << "This program is designed to do the basic foil method\n"
+    cout << "\nThis program is designed to do the basic foil method\n"
          << "You begin by inputting a string of characters and the\n"
          << "program will output the result.\n";
     
-    cout << "What varaiable will you use?";
+    cout << "What varaiable will you use: ";
     cin >> Variable;
     operators op;
     op.setVariable(Variable);
@@ -88,6 +132,12 @@ int main()
     cin >> userInput1;
     cout << "Input 2: ";
     cin >> userInput2;
-    op.seperateTerms(userInput1);
+
+    if (op.checkForVariables(userInput1))
+    {    
+        op.separateTerms(userInput1);
+        op.separateVariableTerms(userInput1);
+        op.separateNonVariableTerms(userInput1);
+    }
     return 0;
 }
