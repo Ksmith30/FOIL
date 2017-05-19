@@ -5,11 +5,6 @@
 #include <sstream>
 using namespace std;
 
-const char addition = '+';
-const char subtraction = '-';
-const char multiplication = '*';
-const char division = '/';
-
 class operators
 {
     public:
@@ -23,15 +18,16 @@ class operators
         void separateNonVariableTerms(const string userInput);
         void getCoefficients(const string userInput);
     private:
-        char checkString;
-        string subString;
         vector<string> terms;
         vector<string> variableTerms;
         vector<string> nonVariableTerms;
-        int position1 = 0;
+        vector<int> coefficients;
         char variable;
-        int variablePosition;
         string s;
+        const static char addition = '+';
+        const static char subtraction = '-';
+        const static char multiplication = '*';
+        const static char division = '/';
 };
 
 operators::operators()
@@ -50,14 +46,17 @@ void operators::setVariable(const char Variable)
     ss >> s;
 }
 
-bool operators::checkForVariables(string userInput)
+bool operators::checkForVariables(const string userInput)
 {
     if (userInput.find(variable, 0) != string::npos) return true;
     else return false;
 }
 
-void operators::separateTerms(string userInput)
+void operators::separateTerms(const string userInput)
 {
+    char checkString;
+    string subString;
+    int position1 = 0;
     for (int i = 0; i < userInput.length(); i++)
     {
         checkString = userInput[i];
@@ -80,7 +79,7 @@ void operators::separateTerms(string userInput)
     cout << endl;
 }
 
-void operators::separateVariableTerms(string userInput)
+void operators::separateVariableTerms(const string userInput)
 {
     for (int r = 0; r < terms.size(); r++)
         for (int c = 0; c < terms.size(); c++)
@@ -92,7 +91,7 @@ void operators::separateVariableTerms(string userInput)
     cout << endl;
 }
 
-void operators::separateNonVariableTerms(string userInput)
+void operators::separateNonVariableTerms(const string userInput)
 {
     for (int r = 0; r < terms.size(); r++)
     {
@@ -100,9 +99,8 @@ void operators::separateNonVariableTerms(string userInput)
         {
             if (terms[r][c] == variable)
                 break;
-            else
-                nonVariableTerms.push_back(terms[r]);
-            break;
+            else if ((terms[r][c] != variable) && (c == terms.size() - 1))
+                nonVariableTerms.push_back(terms[r]);    
         }
     }
 
@@ -113,7 +111,25 @@ void operators::separateNonVariableTerms(string userInput)
 
 void operators::getCoefficients(const string userInput)
 {
-    
+    string Coefficient;
+    double coefficient = 0;
+    for (int r = 0; r < variableTerms.size(); r++)
+    {
+        for (int c = 0; c < variableTerms.size(); c++)
+        {
+            if (variableTerms[r][c] == variable)
+                break;
+            else Coefficient += variableTerms[r][c];        
+        }
+        coefficient = atoi(Coefficient.c_str());
+        coefficients.push_back(coefficient);
+    }
+    cout << Coefficient << endl;
+
+    for (auto &i : coefficients)
+        cout << i << ' ';
+    cout << endl;
+        
 }
 
 int main()
@@ -125,19 +141,22 @@ int main()
          << "program will output the result.\n";
     
     cout << "What varaiable will you use: ";
-    cin >> Variable;
+    //cin >> Variable;
+    Variable = 'x';
     operators op;
     op.setVariable(Variable);
-    cout << "Input 1: ";
-    cin >> userInput1;
-    cout << "Input 2: ";
-    cin >> userInput2;
-
+    userInput1 = "x^2+22x+3";
+    cout << "Input 1: " << userInput1 << endl;
+    //cin >> userInput1;
+    userInput2 = "x";
+    cout << "Input 2: " << userInput2 << endl;
+    //cin >> userInput2;
     if (op.checkForVariables(userInput1))
     {    
         op.separateTerms(userInput1);
         op.separateVariableTerms(userInput1);
         op.separateNonVariableTerms(userInput1);
+        op.getCoefficients(userInput1);
     }
     return 0;
 }
