@@ -22,10 +22,10 @@ public:
 
 	void setVariable(const char Variable);
 	bool checkForVariables(const string userInput);
-	void separateTerms(const string userInput);
-	void separateVariableTerms(const string userInput);
-	void separateNonVariableTerms(const string userInput);
-	void getCoefficients(const string userInput);
+	vector<string> separateTerms(const string userInput);
+	vector<string> separateVariableTerms(vector<string> &terms);
+	vector<string> separateNonVariableTerms(vector<string> &terms);
+	vector<int> getCoefficients(vector<string> &variableTerms);
 private:
 	vector<string> terms;
 	vector<string> variableTerms;
@@ -37,6 +37,7 @@ private:
 	const static char subtraction = '-';
 	const static char multiplication = '*';
 	const static char division = '/';
+	const static char exponential = '^';
 };
 
 #endif /* OperatorS_H_ */
